@@ -321,6 +321,9 @@ def get_device(
             print('ERROR: cuda:1 not available even if use-cuda is set')
             exit(-1)
     else:
+        if SETTINGS.FM_ANALYSIS:
+            print('ERROR: Feature map analysis currently not available for cpu')
+            exit(-1)
         device = 'cpu'
 
     return torch.device(device)

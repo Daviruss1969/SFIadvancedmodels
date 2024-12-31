@@ -1,4 +1,5 @@
 import torch
+from fm_analysis.MetricEnum import MetricEnum
 
 
 # SET THE NETWORKS 
@@ -25,7 +26,7 @@ DATASET available: 'CIFAR10', 'CIFAR100', 'GTSRB'
 FAULT_LIST_GENERATION = True
 
 # enable the fault injection
-FAULTS_INJECTION = False
+FAULTS_INJECTION = True
 
 # 0 : masked, 1: non.critic, 2: critic
 FI_ANALYSIS = False
@@ -36,7 +37,10 @@ DATASET_NAME = 'CIFAR10'
 NETWORK_NAME = 'ResNet20'
 
 # if you want to check  only the accuracy of the clean model
-ONLY_CLEAN_INFERENCE = True
+ONLY_CLEAN_INFERENCE = False
+
+# Enable feature map analysis
+FM_ANALYSIS = True
 # ------------------------------------ FAULT LIST SETTINGS ------------------------------------
 
 
@@ -89,6 +93,10 @@ RAM_LIMIT = False
 BATCH_START = 0
 BATCH_END = 13
 
+# ------------------------------------ FEATURE MAPS ANALYSIS SETTINGS -----------------------------#
+
+CUDA_COMPILATION_MODE = "ptx"
+FM_ANALYSIS_METRIC = MetricEnum.MEAN_ABSOLUTE_ERROR
         
 # ------------------------------------ SAVE SETTINGS ------------------------------------
 

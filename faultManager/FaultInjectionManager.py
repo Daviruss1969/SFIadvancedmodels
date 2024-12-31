@@ -16,6 +16,7 @@ from tqdm import tqdm
 
 from faultManager.NeuronFault import NeuronFault
 from faultManager.WeightFaultInjector import WeightFaultInjector
+from fm_analysis.FmAnalysisManager import FmAnalysisManager
 
 from typing import List, Union
 
@@ -30,6 +31,7 @@ class FaultInjectionManager:
                  device: torch.device,
                  loader: DataLoader,
                  clean_output: torch.Tensor,
+                 golden_fm: dict = {},
                  injectable_modules: List[Union[Module, List[Module]]] = None):
 
         self.network = network
@@ -56,28 +58,48 @@ class FaultInjectionManager:
         # The list of injectable module, used only for neuron fault injection
         self.injectable_modules = injectable_modules
 
+        if SETTINGS.FM_ANALYSIS:
+            # The dictionary containing the golden feature maps
+            self.golden_fm = golden_fm
 
-    def run_clean_campaign(self):
+            # List containing all the registered forward hooks
+            self.hooks = list()
 
-        pbar = tqdm(self.loader,
-                    desc='Clean Inference',
-                    colour='green')
+            # Analysis of feature map
+            self.fm_analysis_manager = FmAnalysisManager.torch_module_to_analysis_manager(SETTINGS.MODULE_CLASSES)(SETTINGS.CUDA_COMPILATION_MODE, SETTINGS.FM_ANALYSIS_METRIC)
 
-        for batch_id, batch in enumerate(pbar):
-            data, _ = batch
-            data = data.to(self.device)
+    def __get_layer_hook(self,
+                        batch_id: int,
+                        layer_name: str):
+        """
+        Returns a hook function that saves the output feature map of the layer name
+        :param batch_id: The index of the current batch
+        :param layer_name: Name of the layer for which to save the output feature maps
+        :param save_to_cpu: Default True. Whether to save the output feature maps to cpu or not
+        :return: the hook function to register as a forward hook
+        """
+        def save_output_feature_map_hook(_, in_tensor: torch.Tensor, out_tensor: torch.Tensor):
+            self.fm_analysis_manager(self.golden_fm[batch_id][layer_name], in_tensor[0])
 
-            self.network(data)
+        return save_output_feature_map_hook
 
+    def __remove_all_hooks(self) -> None:
+        """
+        Remove all the forward hooks on the network
+        """
+        for hook in self.hooks:
+            hook.remove()
+        self.hooks = list()
 
     def run_faulty_campaign_on_weight(self,
                                       fault_model: str,
                                       fault_list: list,
                                       first_batch_only: bool = False,
+                                      feature_maps_layer_names: list[str] = [],
                                       force_n: int = None,
                                       save_output: bool = False,
                                       save_ofm: bool = False,
-                                      ofm_folder: str = None) -> (str, int):
+                                      ofm_folder: str = None) -> tuple[str, int]:
         """
         Run a faulty injection campaign for the network. If a layer name is specified, start the computation from that
         layer, loading the input feature maps of the previous layer
@@ -164,6 +186,13 @@ class FaultInjectionManager:
                         for injectable_module in self.injectable_modules:
                             injectable_module.ifm_path = f'{ofm_folder}/fault_{fault_id}_batch_{batch_id}_layer_{injectable_module.layer_name}'
 
+                    if SETTINGS.FM_ANALYSIS:
+                        # Register hooks for the current batch, fault
+                        for name, module in self.network.named_modules():
+                            if name in feature_maps_layer_names:
+                                self.hooks.append(module.register_forward_hook(self.__get_layer_hook(batch_id=batch_id,
+                                                                                                    layer_name=name)))
+
                     # Run inference on the current batch
                     faulty_scores, faulty_indices, different_predictions = self.__run_inference_on_batch(batch_id=batch_id,
                                                                                                          data=data)
@@ -208,6 +237,10 @@ class FaultInjectionManager:
 
                     # Increment the iteration count
                     total_iterations += 1
+
+                if SETTINGS.FM_ANALYSIS:
+                    # Remove all hooks for next iteration
+                    self.__remove_all_hooks()
 
                 # Log the accuracy of the batch
                 os.makedirs(f'{self.__log_folder}/{fault_model}', exist_ok=True)

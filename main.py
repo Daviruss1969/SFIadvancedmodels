@@ -99,11 +99,13 @@ def main():
                                                         device=device,
                                                         loader=loader,
                                                         clean_output=clean_ofm_manager.clean_output,
+                                                        golden_fm=clean_ofm_manager.golden_fm,
                                                         injectable_modules=injectable_modules)
         
         fault_injection_executor.run_faulty_campaign_on_weight(fault_model=SETTINGS.FAULT_MODEL,
                                                             fault_list=fault_list,
                                                             first_batch_only=False,
+                                                            feature_maps_layer_names=clean_ofm_manager.feature_maps_layer_names,
                                                             force_n=SETTINGS.FAULTS_TO_INJECT,
                                                             save_output=SETTINGS.SAVE_FAULTY_OUTPUT,
                                                             save_ofm=SETTINGS.SAVE_FAULTY_OFM,

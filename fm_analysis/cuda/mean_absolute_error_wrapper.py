@@ -6,8 +6,6 @@ import torch
 from fm_analysis.cuda.cuda_wrapper import CudaWrapper
 
 class MeanAbsoluteErrorWrapper(CudaWrapper):
-    _cuda_function: Callable
-
     def __init__(self,
                  mode: Literal["ptx", "cubin"]):
         super().__init__(mode)
@@ -34,6 +32,6 @@ class MeanAbsoluteErrorWrapper(CudaWrapper):
             grid=blocks_per_grid
         )
         
-        # Return the mean
-        return result/size
+        # Return the mean in the cpu memory
+        return result.item()/size
     

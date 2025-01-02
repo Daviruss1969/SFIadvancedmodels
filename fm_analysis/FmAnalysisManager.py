@@ -5,21 +5,21 @@ import torch
 import pycuda.autoinit # To init the pycuda module
 
 from fm_analysis.MetricEnum import MetricEnum
+from fm_analysis.cuda.cuda_wrapper import CudaWrapper
 
 class FmAnalysisManager:
 
-    _mode: Literal["ptx", "cubin"]
     _metric: MetricEnum
-    _cuda_function: Callable
+    _wrapper: CudaWrapper
 
     def __init__(self,
                  mode: Literal["ptx", "cubin"],
                  metric: MetricEnum):
-        self._mode = mode
         self._metric = metric
+        self._wrapper = self._get_cuda_wrapper(mode)
 
     @abstractmethod
-    def __call__(self, golden_tensor: torch.Tensor, faulty_tensor: torch.Tensor) -> torch.Tensor:
+    def __call__(self, golden_tensor: torch.Tensor, faulty_tensor: torch.Tensor) -> float:
         pass
         
     @staticmethod
@@ -30,3 +30,12 @@ class FmAnalysisManager:
             return ConvolutionFmAnalysisManager
         
         raise Exception("specified module not handled")
+    
+    def _get_cuda_wrapper(self,
+                          mode: Literal["ptx", "cubin"]) -> CudaWrapper:
+        from fm_analysis.cuda.mean_absolute_error_wrapper import MeanAbsoluteErrorWrapper
+
+        if self._metric == MetricEnum.MEAN_ABSOLUTE_ERROR:
+            return MeanAbsoluteErrorWrapper(mode)
+        
+        raise Exception("specified metric not handled")

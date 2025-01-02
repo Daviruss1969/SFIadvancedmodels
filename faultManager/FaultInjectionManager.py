@@ -79,7 +79,8 @@ class FaultInjectionManager:
         :return: the hook function to register as a forward hook
         """
         def save_output_feature_map_hook(_, in_tensor: torch.Tensor, out_tensor: torch.Tensor):
-            self.fm_analysis_manager(self.golden_fm[batch_id][layer_name], in_tensor[0])
+            result = self.fm_analysis_manager(self.golden_fm[batch_id][layer_name], in_tensor[0].detach())
+            print(f"{batch_id}, {layer_name} : {result}")
 
         return save_output_feature_map_hook
 

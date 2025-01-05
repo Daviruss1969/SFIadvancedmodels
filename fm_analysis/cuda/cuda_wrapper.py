@@ -1,10 +1,9 @@
-from typing import Callable, Literal
+from typing import Literal
 from abc import abstractmethod
 
 import torch
 
 class CudaWrapper:
-    _cuda_function: Callable
     _mode: Literal["ptx", "cubin"]
 
     @abstractmethod

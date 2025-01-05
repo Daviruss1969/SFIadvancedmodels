@@ -39,9 +39,9 @@ extern "C" {
         // Compute the square
         float square;
         if (gindex < N) {
-           square = fm[gindex] * fm[gindex];
+            square = fm[gindex] * fm[gindex];
         } else {
-            square = 1.0f;
+            square = .0f;
         }
 
         // Declare shared memory

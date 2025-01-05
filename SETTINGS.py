@@ -96,7 +96,7 @@ BATCH_END = 13
 # ------------------------------------ FEATURE MAPS ANALYSIS SETTINGS -----------------------------#
 
 CUDA_COMPILATION_MODE = "ptx"
-FM_ANALYSIS_METRIC = MetricEnum.MEAN_ABSOLUTE_ERROR
+FM_ANALYSIS_METRIC = MetricEnum.COSINE_SIMILARITY
         
 # ------------------------------------ SAVE SETTINGS ------------------------------------
 

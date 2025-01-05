@@ -34,8 +34,12 @@ class FmAnalysisManager:
     def _get_cuda_wrapper(self,
                           mode: Literal["ptx", "cubin"]) -> CudaWrapper:
         from fm_analysis.cuda.mean_absolute_error_wrapper import MeanAbsoluteErrorWrapper
+        from fm_analysis.cuda.cosine_similarity_wrapper import CosineSimilarityWrapper
 
         if self._metric == MetricEnum.MEAN_ABSOLUTE_ERROR:
             return MeanAbsoluteErrorWrapper(mode)
+        
+        if self._metric == MetricEnum.COSINE_SIMILARITY:
+            return CosineSimilarityWrapper(mode)
         
         raise Exception("specified metric not handled")

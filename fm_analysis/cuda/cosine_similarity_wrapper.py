@@ -10,8 +10,8 @@ class CosineSimilarityWrapper(CudaWrapper):
     def __init__(self,
                  mode: Literal["ptx", "cubin"]):
         super().__init__(mode)
-        self._dot_product_kernel = cuda.module_from_file(f"fm_analysis/cuda/{self._mode}/cosine_similarity.{self._mode}").get_function("dot_product")
-        self._euclidian_norm_kernel = cuda.module_from_file(f"fm_analysis/cuda/{self._mode}/cosine_similarity.{self._mode}").get_function("euclidian_norm")
+        self._dot_product_kernel = cuda.module_from_file(f"fm_analysis/cuda/{self._mode}/dot_product.{self._mode}").get_function("dot_product")
+        self._euclidian_norm_kernel = cuda.module_from_file(f"fm_analysis/cuda/{self._mode}/euclidian_norm.{self._mode}").get_function("euclidian_norm")
 
     def __call__(self,
                 golden_tensor: torch.Tensor,

@@ -2,6 +2,7 @@ from typing import Callable, Literal
 
 import pycuda.driver as cuda
 import torch
+import numpy as np
 
 from fm_analysis.cuda.cuda_wrapper import CudaWrapper
 
@@ -29,6 +30,7 @@ class MeanAbsoluteErrorWrapper(CudaWrapper):
             faulty_tensor,
             result,
             size,
+            np.float32(1),
             block=threads_per_block,
             grid=blocks_per_grid
         )

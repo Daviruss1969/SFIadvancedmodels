@@ -37,6 +37,7 @@ class FmAnalysisManager:
         from fm_analysis.cuda.cosine_similarity_wrapper import CosineSimilarityWrapper
         from fm_analysis.cuda.minkowski_distance_wrapper import MinkowskiDistanceWrapper
         from fm_analysis.cuda.structural_similarity_index_wrapper import StructuralSimilarityIndexWrapper
+        from fm_analysis.cuda.sparsity_ratio_wrapper import SparsityRatioWrapper
 
         if self._metric == MetricEnum.MEAN_ABSOLUTE_ERROR:
             return MeanAbsoluteErrorWrapper(mode)
@@ -50,4 +51,7 @@ class FmAnalysisManager:
         if self._metric == MetricEnum.STRUCTURAL_SIMILARITY_INDEX:
             return StructuralSimilarityIndexWrapper(mode)
         
+        if self._metric == MetricEnum.SPARSITY_RATIO:
+            return SparsityRatioWrapper(mode)
+
         raise Exception("specified metric not handled")

@@ -1,5 +1,6 @@
 import torch
 from fm_analysis.MetricEnum import MetricEnum
+from typing import Literal
 
 
 # SET THE NETWORKS 
@@ -96,9 +97,10 @@ BATCH_END = 13
 # ------------------------------------ FEATURE MAPS ANALYSIS SETTINGS -----------------------------#
 
 CUDA_COMPILATION_MODE = "ptx"
-FM_ANALYSIS_METRIC = MetricEnum.STRUCTURAL_SIMILARITY_INDEX
+FM_ANALYSIS_METRIC = MetricEnum.SPARSITY_RATIO
 
 MINKOWSKI_DISTANCE_ORDER_NORM = 3.0
+SPARSITY_RATIO_TENSOR: Literal["golden", "faulty"] = "faulty"
         
 # ------------------------------------ SAVE SETTINGS ------------------------------------
 

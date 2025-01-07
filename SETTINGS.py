@@ -96,7 +96,9 @@ BATCH_END = 13
 # ------------------------------------ FEATURE MAPS ANALYSIS SETTINGS -----------------------------#
 
 CUDA_COMPILATION_MODE = "ptx"
-FM_ANALYSIS_METRIC = MetricEnum.COSINE_SIMILARITY
+FM_ANALYSIS_METRIC = MetricEnum.MINKOWSKI_DISTANCE
+
+MINKOWSKI_DISTANCE_ORDER_NORM = 3.0
         
 # ------------------------------------ SAVE SETTINGS ------------------------------------
 

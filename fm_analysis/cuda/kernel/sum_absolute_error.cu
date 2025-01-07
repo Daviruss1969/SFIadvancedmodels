@@ -1,5 +1,5 @@
 extern "C" {
-    __global__ void sum_absolute_error(float* golden_fm, float* input_fm, float* result, int N, int order_norm = 1) {
+    __global__ void sum_absolute_error(float* golden_fm, float* input_fm, float* result, int N, float order_norm = 1.f) {
         int lindex = threadIdx.x;
         int gindex = blockDim.x * blockIdx.x + lindex;
 
@@ -8,7 +8,7 @@ extern "C" {
         if (gindex < N) {
             absolute_difference = abs(golden_fm[gindex] - input_fm[gindex]);
 
-            if (order_norm != 1) {
+            if (order_norm != 1.f) {
                 absolute_difference = pow(absolute_difference, order_norm);
             }
         }

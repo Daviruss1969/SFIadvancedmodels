@@ -1,14 +1,16 @@
 extern "C" {
     __global__ void euclidian_norm(float* fm, float* result, int N) {
+        int batch_id = blockIdx.y;
+
         int lindex = threadIdx.x;
-        int gindex = blockDim.x * blockIdx.x + lindex;
+        int offset_batch = blockDim.x * blockIdx.x + lindex;
+
+        int gindex = batch_id * N + offset_batch;
 
         // Compute the square
-        float square;
-        if (gindex < N) {
+        float square = .0f;
+        if (offset_batch < N) {
             square = fm[gindex] * fm[gindex];
-        } else {
-            square = .0f;
         }
 
         // Declare shared memory
@@ -28,7 +30,7 @@ extern "C" {
 
         // Add the results in each block
         if (lindex == 0) {
-            atomicAdd(result, sharedData[0]);
+            atomicAdd(&result[batch_id], sharedData[0]);
         }
     }
 }

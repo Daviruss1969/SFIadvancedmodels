@@ -124,7 +124,7 @@ def injectable_output_module_class(parent_module):
             # Save the input to file and self.layer_name == "layer1.0.conv1" (ResNet20) self.feature_maps_layer_names[]
             # MobileNetV2 first layer: layers.0.conv1
             # ResNet20 first layer: layer1.0.conv1
-            if self.__save_ifm and self.layer_name == SETTINGS.INPUT_FMAPS_TO_SAVE:
+            if self.ifm_path and self.__save_ifm and self.layer_name == SETTINGS.INPUT_FMAPS_TO_SAVE:
                 
                 if self.__save_compressed:
                     np.savez_compressed(self.ifm_path, input_tensor.detach().cpu().numpy())
@@ -134,7 +134,7 @@ def injectable_output_module_class(parent_module):
             # output_clean = self.__clean_module(input_tensor)
             output_clean = super().forward(input_tensor)
 
-            if self.__output_fault_mask is not None:
+            if self.ifm_path and self.__output_fault_mask is not None:
 
                 masked_output_clean = torch.mul(output_clean, self.__output_clean_mask)
                 masked_output_fault = torch.mul(self.__output_fault, self.__output_fault_mask)

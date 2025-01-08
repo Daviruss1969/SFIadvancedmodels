@@ -31,7 +31,6 @@ class FaultInjectionManager:
                  device: torch.device,
                  loader: DataLoader,
                  clean_output: torch.Tensor,
-                 golden_fm: dict = {},
                  injectable_modules: List[Union[Module, List[Module]]] = None):
 
         self.network = network
@@ -59,27 +58,25 @@ class FaultInjectionManager:
         self.injectable_modules = injectable_modules
 
         if SETTINGS.FM_ANALYSIS:
-            # The dictionary containing the golden feature maps
-            self.golden_fm = golden_fm
-
             # List containing all the registered forward hooks
             self.hooks = list()
 
             # Analysis of feature map
             self.fm_analysis_manager = FmAnalysisManager.torch_module_to_analysis_manager(SETTINGS.MODULE_CLASSES)(SETTINGS.CUDA_COMPILATION_MODE, SETTINGS.FM_ANALYSIS_METRIC)
 
-    def __get_layer_hook(self,
+    def __get_layer_hook_analysis(self,
                         batch_id: int,
                         layer_name: str):
-        """
-        Returns a hook function that saves the output feature map of the layer name
-        :param batch_id: The index of the current batch
-        :param layer_name: Name of the layer for which to save the output feature maps
-        :param save_to_cpu: Default True. Whether to save the output feature maps to cpu or not
-        :return: the hook function to register as a forward hook
-        """
         def save_output_feature_map_hook(_, in_tensor: torch.Tensor, out_tensor: torch.Tensor):
-            result = self.fm_analysis_manager(self.golden_fm[batch_id][layer_name], in_tensor[0].detach())
+            result = self.fm_analysis_manager(self.golden_fm[layer_name], in_tensor[0].detach())
+
+        return save_output_feature_map_hook
+    
+    def __get_layer_hook_golden(self,
+                        batch_id: int,
+                        layer_name: str):
+        def save_output_feature_map_hook(_, in_tensor: torch.Tensor, out_tensor: torch.Tensor):
+            self.golden_fm[layer_name] = in_tensor[0].detach()
 
         return save_output_feature_map_hook
 
@@ -152,6 +149,21 @@ class FaultInjectionManager:
                 batch_clean_prediction_scores = [float(fault) for fault in torch.topk(self.clean_output[batch_id], k=1).values]
                 batch_clean_prediction_indices = [int(fault) for fault in torch.topk(self.clean_output[batch_id], k=1).indices]
 
+                if SETTINGS.FM_ANALYSIS:
+                    # The dictionary containing the golden feature maps
+                    self.golden_fm = {}
+
+                    # Register hooks to put the golden feature map of the current batch in gpu memory
+                    for name, module in self.network.named_modules():
+                        if name in feature_maps_layer_names:
+                            self.hooks.append(module.register_forward_hook(self.__get_layer_hook_golden(batch_id=batch_id,
+                                                                                                layer_name=name)))
+                            
+                    # Run the golden inference for the batch
+                    self.network(data)
+
+                    # Remove the hooks
+                    self.__remove_all_hooks()
 
                 # Inject all the faults in a single batch
                 pbar = tqdm(fault_list,
@@ -190,7 +202,7 @@ class FaultInjectionManager:
                         # Register hooks for the current batch, fault
                         for name, module in self.network.named_modules():
                             if name in feature_maps_layer_names:
-                                self.hooks.append(module.register_forward_hook(self.__get_layer_hook(batch_id=batch_id,
+                                self.hooks.append(module.register_forward_hook(self.__get_layer_hook_analysis(batch_id=batch_id,
                                                                                                     layer_name=name)))
 
                     # Run inference on the current batch

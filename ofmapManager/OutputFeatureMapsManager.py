@@ -37,7 +37,6 @@ class OutputFeatureMapsManager:
         self.network = network
         self.loader = loader
         self.device = device
-        self.golden_fm = {}
 
         # An integer that measures the size of a single batch in memory
         batch = next(iter(self.loader))[0]
@@ -103,12 +102,6 @@ class OutputFeatureMapsManager:
         :return: the hook function to register as a forward hook
         """
         def save_output_feature_map_hook(_, in_tensor: torch.Tensor, out_tensor: torch.Tensor):
-            if SETTINGS.FM_ANALYSIS:
-                if batch_id not in self.golden_fm:
-                    self.golden_fm[batch_id] = {}
-
-                self.golden_fm[batch_id][layer_name] = in_tensor[0].detach()
-
             # Move input and output feature maps to main memory and detach
             input_to_save = in_tensor[0].detach().cpu() if save_to_cpu else in_tensor[0].detach()
             output_to_save = out_tensor.detach().cpu() if save_to_cpu else out_tensor.detach()

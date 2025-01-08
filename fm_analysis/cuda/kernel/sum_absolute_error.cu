@@ -1,11 +1,15 @@
 extern "C" {
     __global__ void sum_absolute_error(float* golden_fm, float* input_fm, float* result, int N, float order_norm = 1.f) {
+        int batch_id = blockIdx.y;
+
         int lindex = threadIdx.x;
-        int gindex = blockDim.x * blockIdx.x + lindex;
+        int offset_batch = blockDim.x * blockIdx.x + lindex;
+
+        int gindex = batch_id * N + offset_batch;
 
         // Compute absolute_difference
         float absolute_difference = 0;
-        if (gindex < N) {
+        if (offset_batch < N) {
             absolute_difference = abs(golden_fm[gindex] - input_fm[gindex]);
 
             if (order_norm != 1.f) {
@@ -30,7 +34,7 @@ extern "C" {
 
         // Add the results in each block
         if (lindex == 0) {
-            atomicAdd(result, sharedData[0]);
+            atomicAdd(&result[batch_id], sharedData[0]);
         }
     }
 }

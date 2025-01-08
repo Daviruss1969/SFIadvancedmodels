@@ -15,5 +15,6 @@ class CudaWrapper:
     def __call__(self,
                  golden_tensor: torch.Tensor,
                  faulty_tensor: torch.Tensor,
+                 batch_size: int,
                  size: int) -> float:
         pass

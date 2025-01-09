@@ -8,7 +8,7 @@ extern "C" {
         int gindex = batch_id * N + offset_batch;
 
         // Compute absolute_difference
-        float absolute_difference = 0;
+        float absolute_difference = .0f;
         if (offset_batch < N) {
             absolute_difference = abs(golden_fm[gindex] - input_fm[gindex]);
 

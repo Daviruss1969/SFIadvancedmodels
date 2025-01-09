@@ -1,11 +1,15 @@
 extern "C" {
     __global__ void variance(float* fm, float* result, float mean_value, int N) {
+        int batch_id = blockIdx.y;
+
         int lindex = threadIdx.x;
-        int gindex = blockDim.x * blockIdx.x + lindex;
+        int offset_batch = blockDim.x * blockIdx.x + lindex;
+
+        int gindex = batch_id * N + offset_batch;
 
         // Compute the square of the difference between one value and the mean value
         float value = .0f;
-        if (gindex < N) {
+        if (offset_batch < N) {
             float diff = fm[gindex] - mean_value;
             value = diff*diff;
         }
@@ -27,7 +31,7 @@ extern "C" {
 
         // Add the results in each block
         if (lindex == 0) {
-            atomicAdd(result, sharedData[0]);
+            atomicAdd(&result[batch_id], sharedData[0]);
         }
     }
 }

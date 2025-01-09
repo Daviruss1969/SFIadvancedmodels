@@ -1,11 +1,15 @@
 extern "C" {
     __global__ void covariance(float* golden_fm, float* input_fm, float* result, float golden_mean_value, float input_mean_value, int N) {
+        int batch_id = blockIdx.y;
+
         int lindex = threadIdx.x;
-        int gindex = blockDim.x * blockIdx.x + lindex;
+        int offset_batch = blockDim.x * blockIdx.x + lindex;
+
+        int gindex = batch_id * N + offset_batch;
 
         // Compute the product of the difference between one value and the mean value corresponding to a feature map
         float diff = .0f;
-        if (gindex < N) {
+        if (offset_batch < N) {
             diff = (golden_fm[gindex] - golden_mean_value) * (input_fm[gindex] - input_mean_value);
         }
 
@@ -26,7 +30,7 @@ extern "C" {
 
         // Add the results in each block
         if (lindex == 0) {
-            atomicAdd(result, sharedData[0]);
+            atomicAdd(&result[batch_id], sharedData[0]);
         }
     }
 }

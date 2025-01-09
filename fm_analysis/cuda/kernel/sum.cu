@@ -1,10 +1,14 @@
 extern "C" {
     __global__ void sum(float* fm, float* result, int N) {
+        int batch_id = blockIdx.y;
+
         int lindex = threadIdx.x;
-        int gindex = blockDim.x * blockIdx.x + lindex;
+        int offset_batch = blockDim.x * blockIdx.x + lindex;
+
+        int gindex = batch_id * N + offset_batch;
 
         float value = .0f;
-        if (gindex < N) {
+        if (offset_batch < N) {
             value = fm[gindex];
         }
 
@@ -25,7 +29,7 @@ extern "C" {
 
         // Add the results in each block
         if (lindex == 0) {
-            atomicAdd(result, sharedData[0]);
+            atomicAdd(&result[batch_id], sharedData[0]);
         }
     }
 }

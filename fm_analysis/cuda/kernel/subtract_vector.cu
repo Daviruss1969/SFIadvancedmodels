@@ -1,15 +1,11 @@
 extern "C" {
-    __global__ void subtract_vector(float* golden_fm, float* input_fm, float* result, int N) {
-        int batch_id = blockIdx.y;
-
+    __global__ void subtract_vector(float* input1, float* input2, float* result, int N) {
         int lindex = threadIdx.x;
-        int offset_batch = blockDim.x * blockIdx.x + lindex;
-
-        int gindex = batch_id * N + offset_batch;
+        int gindex = blockDim.x * blockIdx.x + lindex;
 
         // Compute the subtraction
-        if (offset_batch < N) {
-           result[gindex] = golden_fm[gindex] - input_fm[gindex];
+        if (gindex < N) {
+           result[gindex] = input1[gindex] - input2[gindex];
         }
     }
 }

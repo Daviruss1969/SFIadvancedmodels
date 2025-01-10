@@ -21,61 +21,65 @@
 {
 	.reg .pred 	%p<6>;
 	.reg .f32 	%f<10>;
-	.reg .b32 	%r<15>;
-	.reg .b64 	%rd<7>;
+	.reg .b32 	%r<17>;
+	.reg .b64 	%rd<9>;
 	// demoted variable
 	.shared .align 4 .b8 _ZZ3sumE10sharedData[4096];
 
 	ld.param.u64 	%rd1, [sum_param_0];
 	ld.param.u64 	%rd2, [sum_param_1];
-	ld.param.u32 	%r8, [sum_param_2];
-	mov.u32 	%r9, %ctaid.x;
+	ld.param.u32 	%r9, [sum_param_2];
+	mov.u32 	%r10, %ctaid.x;
 	mov.u32 	%r1, %ntid.x;
 	mov.u32 	%r2, %tid.x;
-	mad.lo.s32 	%r3, %r1, %r9, %r2;
-	setp.ge.s32 	%p1, %r3, %r8;
+	mad.lo.s32 	%r3, %r1, %r10, %r2;
+	mov.u32 	%r4, %ctaid.y;
+	setp.ge.s32 	%p1, %r3, %r9;
 	mov.f32 	%f9, 0f00000000;
 	@%p1 bra 	$L__BB0_2;
 
 	cvta.to.global.u64 	%rd3, %rd1;
-	mul.wide.s32 	%rd4, %r3, 4;
+	mad.lo.s32 	%r11, %r4, %r9, %r3;
+	mul.wide.s32 	%rd4, %r11, 4;
 	add.s64 	%rd5, %rd3, %rd4;
 	ld.global.f32 	%f9, [%rd5];
 
 $L__BB0_2:
-	shl.b32 	%r10, %r2, 2;
-	mov.u32 	%r11, _ZZ3sumE10sharedData;
-	add.s32 	%r4, %r11, %r10;
-	st.shared.f32 	[%r4], %f9;
+	shl.b32 	%r12, %r2, 2;
+	mov.u32 	%r13, _ZZ3sumE10sharedData;
+	add.s32 	%r5, %r13, %r12;
+	st.shared.f32 	[%r5], %f9;
 	bar.sync 	0;
-	shr.u32 	%r14, %r1, 1;
-	setp.eq.s32 	%p2, %r14, 0;
+	shr.u32 	%r16, %r1, 1;
+	setp.eq.s32 	%p2, %r16, 0;
 	@%p2 bra 	$L__BB0_6;
 
 $L__BB0_3:
-	setp.ge.s32 	%p3, %r2, %r14;
+	setp.ge.s32 	%p3, %r2, %r16;
 	@%p3 bra 	$L__BB0_5;
 
-	shl.b32 	%r12, %r14, 2;
-	add.s32 	%r13, %r4, %r12;
-	ld.shared.f32 	%f4, [%r4];
-	ld.shared.f32 	%f5, [%r13];
+	shl.b32 	%r14, %r16, 2;
+	add.s32 	%r15, %r5, %r14;
+	ld.shared.f32 	%f4, [%r5];
+	ld.shared.f32 	%f5, [%r15];
 	add.f32 	%f6, %f5, %f4;
-	st.shared.f32 	[%r4], %f6;
+	st.shared.f32 	[%r5], %f6;
 
 $L__BB0_5:
 	bar.sync 	0;
-	shr.u32 	%r14, %r14, 1;
-	setp.ne.s32 	%p4, %r14, 0;
+	shr.u32 	%r16, %r16, 1;
+	setp.ne.s32 	%p4, %r16, 0;
 	@%p4 bra 	$L__BB0_3;
 
 $L__BB0_6:
 	setp.ne.s32 	%p5, %r2, 0;
 	@%p5 bra 	$L__BB0_8;
 
-	ld.shared.f32 	%f7, [_ZZ3sumE10sharedData];
 	cvta.to.global.u64 	%rd6, %rd2;
-	atom.global.add.f32 	%f8, [%rd6], %f7;
+	mul.wide.s32 	%rd7, %r4, 4;
+	add.s64 	%rd8, %rd6, %rd7;
+	ld.shared.f32 	%f7, [_ZZ3sumE10sharedData];
+	atom.global.add.f32 	%f8, [%rd8], %f7;
 
 $L__BB0_8:
 	ret;

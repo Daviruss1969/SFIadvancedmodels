@@ -1,5 +1,5 @@
 extern "C" {
-    __global__ void covariance(float* golden_fm, float* input_fm, float* result, float golden_mean_value, float input_mean_value, int N) {
+    __global__ void covariance(float* golden_fm, float* input_fm, float* golden_mean_values, float* input_mean_values, float* result, int N) {
         int batch_id = blockIdx.y;
 
         int lindex = threadIdx.x;
@@ -10,7 +10,7 @@ extern "C" {
         // Compute the product of the difference between one value and the mean value corresponding to a feature map
         float diff = .0f;
         if (offset_batch < N) {
-            diff = (golden_fm[gindex] - golden_mean_value) * (input_fm[gindex] - input_mean_value);
+            diff = (golden_fm[gindex] - golden_mean_values[batch_id]) * (input_fm[gindex] - input_mean_values[batch_id]);
         }
 
         // Declare shared memory

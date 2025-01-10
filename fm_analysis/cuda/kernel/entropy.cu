@@ -1,6 +1,4 @@
 extern "C" {
-    #include cmath
-
     __global__ void entropy(float* input_fm, float* result, int N, float sum_value) {
         int batch_id = blockIdx.y;
 

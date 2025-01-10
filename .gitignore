@@ -175,3 +175,6 @@ pyproject.toml
 
 # Vscode
 .vscode
+
+# Ideas
+.idea

@@ -97,7 +97,7 @@ BATCH_END = 13
 # ------------------------------------ FEATURE MAPS ANALYSIS SETTINGS -----------------------------#
 
 CUDA_COMPILATION_MODE = "ptx"
-FM_ANALYSIS_METRIC = MetricEnum.SPARSITY_RATIO
+FM_ANALYSIS_METRIC = MetricEnum.MINKOWSKI_DISTANCE
 
 MINKOWSKI_DISTANCE_ORDER_NORM = 3.0
 SPARSITY_RATIO_TENSOR: Literal["golden", "faulty"] = "faulty"

@@ -1,5 +1,5 @@
 extern "C" {
-    __global__ void zero_activations(float* fm, int* result, int N) {
+    __global__ void zero_activations(float* fm, float* result, int N) {
         int batch_id = blockIdx.y;
 
         int lindex = threadIdx.x;
@@ -7,13 +7,13 @@ extern "C" {
 
         int gindex = batch_id * N + offset_batch;
 
-        int value = 0;
+        float value = .0f;
         if (offset_batch < N && fm[gindex] == 0) {
-            value = 1;
+            value = 1.f;
         }
 
         // Declare shared memory
-        __shared__ int sharedData[1024];
+        __shared__ float sharedData[1024];
 
         // Put data into shared memory
         sharedData[lindex] = value;

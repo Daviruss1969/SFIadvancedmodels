@@ -1,5 +1,5 @@
 extern "C" {
-    __global__ void entropy(float* input_fm, float* result, int N, float sum_value) {
+    __global__ void entropy(float* input_fm, float* result, float* sum_values, int N) {
         int batch_id = blockIdx.y;
 
         int lindex = threadIdx.x;
@@ -10,14 +10,14 @@ extern "C" {
         // Compute probability distribution
         float probability_distribution = .0f;
         if (offset_batch < N) {
-            probability_distribution = input_fm[gindex] / sum_value;
+            probability_distribution = input_fm[gindex] / sum_values[batch_id];
         }
 
         // Declare shared memory
         __shared__ float sharedData[1024];
 
         // Put data into shared memory
-        sharedData[lindex] = -probability_distribution * log(probability_distribution);
+        sharedData[lindex] = -(probability_distribution * log(probability_distribution + 1e-12)); // 1e-12 to avoid log 0
         __syncthreads();
 
         // Parallel reduction

@@ -39,6 +39,7 @@ class FmAnalysisManager:
         from fm_analysis.cuda.structural_similarity_index_wrapper import StructuralSimilarityIndexWrapper
         from fm_analysis.cuda.sparsity_ratio_wrapper import SparsityRatioWrapper
         from fm_analysis.cuda.activation_sensitivity_wrapper import ActivationSensitivityWrapper
+        from fm_analysis.cuda.entropy_wrapper import EntropyWrapper
 
         if self._metric == MetricEnum.MEAN_ABSOLUTE_ERROR:
             return MeanAbsoluteErrorWrapper(mode)
@@ -57,5 +58,8 @@ class FmAnalysisManager:
 
         if self._metric == MetricEnum.ACTIVATION_SENSITIVITY:
             return ActivationSensitivityWrapper(mode)
+        
+        if self._metric == MetricEnum.ENTROPY:
+            return EntropyWrapper(mode)
 
         raise Exception("specified metric not handled")

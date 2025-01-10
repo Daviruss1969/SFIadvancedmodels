@@ -16,120 +16,198 @@
 .visible .entry entropy(
 	.param .u64 entropy_param_0,
 	.param .u64 entropy_param_1,
-	.param .u32 entropy_param_2,
-	.param .f32 entropy_param_3
+	.param .u64 entropy_param_2,
+	.param .u32 entropy_param_3
 )
 {
-	.reg .pred 	%p<9>;
-	.reg .f32 	%f<48>;
-	.reg .b32 	%r<21>;
-	.reg .b64 	%rd<9>;
+	.reg .pred 	%p<10>;
+	.reg .f32 	%f<12>;
+	.reg .b32 	%r<44>;
+	.reg .f64 	%fd<64>;
+	.reg .b64 	%rd<13>;
 	// demoted variable
 	.shared .align 4 .b8 _ZZ7entropyE10sharedData[4096];
 
 	ld.param.u64 	%rd1, [entropy_param_0];
 	ld.param.u64 	%rd2, [entropy_param_1];
-	ld.param.u32 	%r9, [entropy_param_2];
-	ld.param.f32 	%f7, [entropy_param_3];
-	mov.u32 	%r10, %ctaid.x;
+	ld.param.u64 	%rd3, [entropy_param_2];
+	ld.param.u32 	%r19, [entropy_param_3];
+	mov.u32 	%r20, %ctaid.x;
 	mov.u32 	%r1, %ntid.x;
 	mov.u32 	%r2, %tid.x;
-	mad.lo.s32 	%r3, %r1, %r10, %r2;
+	mad.lo.s32 	%r3, %r1, %r20, %r2;
 	mov.u32 	%r4, %ctaid.y;
-	setp.ge.s32 	%p1, %r3, %r9;
-	mov.f32 	%f46, 0f00000000;
+	setp.ge.s32 	%p1, %r3, %r19;
+	mov.f64 	%fd60, 0d0000000000000000;
 	@%p1 bra 	$L__BB0_2;
 
-	cvta.to.global.u64 	%rd3, %rd1;
-	mad.lo.s32 	%r11, %r4, %r9, %r3;
-	mul.wide.s32 	%rd4, %r11, 4;
-	add.s64 	%rd5, %rd3, %rd4;
-	ld.global.f32 	%f9, [%rd5];
-	div.rn.f32 	%f46, %f9, %f7;
+	cvta.to.global.u64 	%rd4, %rd1;
+	mad.lo.s32 	%r21, %r4, %r19, %r3;
+	mul.wide.s32 	%rd5, %r21, 4;
+	add.s64 	%rd6, %rd4, %rd5;
+	cvta.to.global.u64 	%rd7, %rd3;
+	mul.wide.s32 	%rd8, %r4, 4;
+	add.s64 	%rd9, %rd7, %rd8;
+	ld.global.f32 	%f1, [%rd9];
+	ld.global.f32 	%f2, [%rd6];
+	div.rn.f32 	%f3, %f2, %f1;
+	cvt.f64.f32 	%fd60, %f3;
 
 $L__BB0_2:
-	mul.f32 	%f10, %f46, 0f4B000000;
-	setp.lt.f32 	%p2, %f46, 0f00800000;
-	selp.f32 	%f3, %f10, %f46, %p2;
-	selp.f32 	%f11, 0fC1B80000, 0f00000000, %p2;
-	mov.b32 	%r12, %f3;
-	add.s32 	%r13, %r12, -1059760811;
-	and.b32  	%r14, %r13, -8388608;
-	sub.s32 	%r15, %r12, %r14;
-	mov.b32 	%f12, %r15;
-	cvt.rn.f32.s32 	%f13, %r14;
-	mov.f32 	%f14, 0f34000000;
-	fma.rn.f32 	%f15, %f13, %f14, %f11;
-	add.f32 	%f16, %f12, 0fBF800000;
-	mov.f32 	%f17, 0f3E1039F6;
-	mov.f32 	%f18, 0fBE055027;
-	fma.rn.f32 	%f19, %f18, %f16, %f17;
-	mov.f32 	%f20, 0fBDF8CDCC;
-	fma.rn.f32 	%f21, %f19, %f16, %f20;
-	mov.f32 	%f22, 0f3E0F2955;
-	fma.rn.f32 	%f23, %f21, %f16, %f22;
-	mov.f32 	%f24, 0fBE2AD8B9;
-	fma.rn.f32 	%f25, %f23, %f16, %f24;
-	mov.f32 	%f26, 0f3E4CED0B;
-	fma.rn.f32 	%f27, %f25, %f16, %f26;
-	mov.f32 	%f28, 0fBE7FFF22;
-	fma.rn.f32 	%f29, %f27, %f16, %f28;
-	mov.f32 	%f30, 0f3EAAAA78;
-	fma.rn.f32 	%f31, %f29, %f16, %f30;
-	mov.f32 	%f32, 0fBF000000;
-	fma.rn.f32 	%f33, %f31, %f16, %f32;
-	mul.f32 	%f34, %f16, %f33;
-	fma.rn.f32 	%f35, %f34, %f16, %f16;
-	mov.f32 	%f36, 0f3F317218;
-	fma.rn.f32 	%f47, %f15, %f36, %f35;
-	setp.lt.u32 	%p3, %r12, 2139095040;
-	@%p3 bra 	$L__BB0_4;
+	add.f64 	%fd61, %fd60, 0d3D719799812DEA11;
+	{
+	.reg .b32 %temp; 
+	mov.b64 	{%temp, %r39}, %fd61;
+	}
+	{
+	.reg .b32 %temp; 
+	mov.b64 	{%r40, %temp}, %fd61;
+	}
+	setp.gt.s32 	%p2, %r39, 1048575;
+	mov.u32 	%r41, -1023;
+	@%p2 bra 	$L__BB0_4;
 
-	mov.f32 	%f37, 0f7F800000;
-	fma.rn.f32 	%f47, %f3, %f37, %f37;
+	mul.f64 	%fd61, %fd61, 0d4350000000000000;
+	{
+	.reg .b32 %temp; 
+	mov.b64 	{%temp, %r39}, %fd61;
+	}
+	{
+	.reg .b32 %temp; 
+	mov.b64 	{%r40, %temp}, %fd61;
+	}
+	mov.u32 	%r41, -1077;
 
 $L__BB0_4:
-	setp.eq.f32 	%p4, %f3, 0f00000000;
-	selp.f32 	%f38, 0fFF800000, %f47, %p4;
-	mul.f32 	%f39, %f46, %f38;
-	neg.f32 	%f40, %f39;
-	shl.b32 	%r16, %r2, 2;
-	mov.u32 	%r17, _ZZ7entropyE10sharedData;
-	add.s32 	%r5, %r17, %r16;
-	st.shared.f32 	[%r5], %f40;
-	bar.sync 	0;
-	shr.u32 	%r20, %r1, 1;
-	setp.eq.s32 	%p5, %r20, 0;
+	add.s32 	%r24, %r39, -1;
+	setp.lt.u32 	%p3, %r24, 2146435071;
+	@%p3 bra 	$L__BB0_6;
+	bra.uni 	$L__BB0_5;
+
+$L__BB0_6:
+	shr.u32 	%r26, %r39, 20;
+	add.s32 	%r42, %r41, %r26;
+	and.b32  	%r27, %r39, -2146435073;
+	or.b32  	%r28, %r27, 1072693248;
+	mov.b64 	%fd62, {%r40, %r28};
+	setp.lt.s32 	%p5, %r28, 1073127583;
 	@%p5 bra 	$L__BB0_8;
 
-$L__BB0_5:
-	setp.ge.s32 	%p6, %r2, %r20;
-	@%p6 bra 	$L__BB0_7;
-
-	shl.b32 	%r18, %r20, 2;
-	add.s32 	%r19, %r5, %r18;
-	ld.shared.f32 	%f41, [%r5];
-	ld.shared.f32 	%f42, [%r19];
-	add.f32 	%f43, %f42, %f41;
-	st.shared.f32 	[%r5], %f43;
-
-$L__BB0_7:
-	bar.sync 	0;
-	shr.u32 	%r20, %r20, 1;
-	setp.ne.s32 	%p7, %r20, 0;
-	@%p7 bra 	$L__BB0_5;
+	{
+	.reg .b32 %temp; 
+	mov.b64 	{%r29, %temp}, %fd62;
+	}
+	{
+	.reg .b32 %temp; 
+	mov.b64 	{%temp, %r30}, %fd62;
+	}
+	add.s32 	%r31, %r30, -1048576;
+	mov.b64 	%fd62, {%r29, %r31};
+	add.s32 	%r42, %r42, 1;
 
 $L__BB0_8:
-	setp.ne.s32 	%p8, %r2, 0;
-	@%p8 bra 	$L__BB0_10;
+	add.f64 	%fd15, %fd62, 0d3FF0000000000000;
+	mov.f64 	%fd16, 0d3FF0000000000000;
+	rcp.approx.ftz.f64 	%fd17, %fd15;
+	neg.f64 	%fd18, %fd15;
+	fma.rn.f64 	%fd19, %fd18, %fd17, %fd16;
+	fma.rn.f64 	%fd20, %fd19, %fd19, %fd19;
+	fma.rn.f64 	%fd21, %fd20, %fd17, %fd17;
+	add.f64 	%fd22, %fd62, 0dBFF0000000000000;
+	mul.f64 	%fd23, %fd22, %fd21;
+	fma.rn.f64 	%fd24, %fd22, %fd21, %fd23;
+	mul.f64 	%fd25, %fd24, %fd24;
+	mov.f64 	%fd26, 0d3ED0EE258B7A8B04;
+	mov.f64 	%fd27, 0d3EB1380B3AE80F1E;
+	fma.rn.f64 	%fd28, %fd27, %fd25, %fd26;
+	mov.f64 	%fd29, 0d3EF3B2669F02676F;
+	fma.rn.f64 	%fd30, %fd28, %fd25, %fd29;
+	mov.f64 	%fd31, 0d3F1745CBA9AB0956;
+	fma.rn.f64 	%fd32, %fd30, %fd25, %fd31;
+	mov.f64 	%fd33, 0d3F3C71C72D1B5154;
+	fma.rn.f64 	%fd34, %fd32, %fd25, %fd33;
+	mov.f64 	%fd35, 0d3F624924923BE72D;
+	fma.rn.f64 	%fd36, %fd34, %fd25, %fd35;
+	mov.f64 	%fd37, 0d3F8999999999A3C4;
+	fma.rn.f64 	%fd38, %fd36, %fd25, %fd37;
+	mov.f64 	%fd39, 0d3FB5555555555554;
+	fma.rn.f64 	%fd40, %fd38, %fd25, %fd39;
+	sub.f64 	%fd41, %fd22, %fd24;
+	add.f64 	%fd42, %fd41, %fd41;
+	neg.f64 	%fd43, %fd24;
+	fma.rn.f64 	%fd44, %fd43, %fd22, %fd42;
+	mul.f64 	%fd45, %fd21, %fd44;
+	mul.f64 	%fd46, %fd25, %fd40;
+	fma.rn.f64 	%fd47, %fd46, %fd24, %fd45;
+	xor.b32  	%r32, %r42, -2147483648;
+	mov.u32 	%r33, -2147483648;
+	mov.u32 	%r34, 1127219200;
+	mov.b64 	%fd48, {%r32, %r34};
+	mov.b64 	%fd49, {%r33, %r34};
+	sub.f64 	%fd50, %fd48, %fd49;
+	mov.f64 	%fd51, 0d3FE62E42FEFA39EF;
+	fma.rn.f64 	%fd52, %fd50, %fd51, %fd24;
+	neg.f64 	%fd53, %fd50;
+	fma.rn.f64 	%fd54, %fd53, %fd51, %fd52;
+	sub.f64 	%fd55, %fd54, %fd24;
+	sub.f64 	%fd56, %fd47, %fd55;
+	mov.f64 	%fd57, 0d3C7ABC9E3B39803F;
+	fma.rn.f64 	%fd58, %fd50, %fd57, %fd56;
+	add.f64 	%fd63, %fd52, %fd58;
+	bra.uni 	$L__BB0_9;
 
-	cvta.to.global.u64 	%rd6, %rd2;
-	mul.wide.s32 	%rd7, %r4, 4;
-	add.s64 	%rd8, %rd6, %rd7;
-	ld.shared.f32 	%f44, [_ZZ7entropyE10sharedData];
-	atom.global.add.f32 	%f45, [%rd8], %f44;
+$L__BB0_5:
+	mov.f64 	%fd13, 0d7FF0000000000000;
+	fma.rn.f64 	%fd14, %fd61, %fd13, %fd13;
+	{
+	.reg .b32 %temp; 
+	mov.b64 	{%temp, %r25}, %fd61;
+	}
+	mov.b32 	%f4, %r25;
+	setp.eq.f32 	%p4, %f4, 0f00000000;
+	selp.f64 	%fd63, 0dFFF0000000000000, %fd14, %p4;
+
+$L__BB0_9:
+	mul.f64 	%fd59, %fd60, %fd63;
+	cvt.rn.f32.f64 	%f5, %fd59;
+	neg.f32 	%f6, %f5;
+	shl.b32 	%r35, %r2, 2;
+	mov.u32 	%r36, _ZZ7entropyE10sharedData;
+	add.s32 	%r15, %r36, %r35;
+	st.shared.f32 	[%r15], %f6;
+	bar.sync 	0;
+	shr.u32 	%r43, %r1, 1;
+	setp.eq.s32 	%p6, %r43, 0;
+	@%p6 bra 	$L__BB0_13;
 
 $L__BB0_10:
+	setp.ge.s32 	%p7, %r2, %r43;
+	@%p7 bra 	$L__BB0_12;
+
+	shl.b32 	%r37, %r43, 2;
+	add.s32 	%r38, %r15, %r37;
+	ld.shared.f32 	%f7, [%r15];
+	ld.shared.f32 	%f8, [%r38];
+	add.f32 	%f9, %f8, %f7;
+	st.shared.f32 	[%r15], %f9;
+
+$L__BB0_12:
+	bar.sync 	0;
+	shr.u32 	%r43, %r43, 1;
+	setp.ne.s32 	%p8, %r43, 0;
+	@%p8 bra 	$L__BB0_10;
+
+$L__BB0_13:
+	setp.ne.s32 	%p9, %r2, 0;
+	@%p9 bra 	$L__BB0_15;
+
+	cvta.to.global.u64 	%rd10, %rd2;
+	mul.wide.s32 	%rd11, %r4, 4;
+	add.s64 	%rd12, %rd10, %rd11;
+	ld.shared.f32 	%f10, [_ZZ7entropyE10sharedData];
+	atom.global.add.f32 	%f11, [%rd12], %f10;
+
+$L__BB0_15:
 	ret;
 
 }

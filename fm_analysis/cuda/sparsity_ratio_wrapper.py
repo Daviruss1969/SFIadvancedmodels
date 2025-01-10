@@ -23,13 +23,12 @@ class SparsityRatioWrapper(CudaWrapper):
         results = torch.zeros(batch_size).cuda()
 
         # Define size of grid/blocks
-        # Define size of grid/blocks
         threads_per_block = (1024, 1, 1)
         blocks_per_grid_size = (int(size/threads_per_block[0]) + 1, int(batch_size), 1)
         blocks_per_grid_batch = (int(batch_size/threads_per_block[0]) + 1, 1, 1)
 
         # Call the kernel and get the number of zero activations
-        tensor = faulty_tensor if SETTINGS.SPARSITY_RATIO_TENSOR == "faulty" else golden_tensor
+        tensor = faulty_tensor if SETTINGS.SINGLE_INPUT_TENSOR == "faulty" else golden_tensor
         self._zero_activations_kernel(
             tensor,
             results,

@@ -41,6 +41,7 @@ class FmAnalysisManager:
         from fm_analysis.cuda.activation_sensitivity_wrapper import ActivationSensitivityWrapper
         from fm_analysis.cuda.entropy_wrapper import EntropyWrapper
         from fm_analysis.cuda.activation_range_wrapper import ActivationRangeWrapper
+        from fm_analysis.cuda.peak_signal_to_noise_ratio_wrapper import PeakSignalToNoiseRatioWrapper
 
         if self._metric == MetricEnum.MEAN_ABSOLUTE_ERROR:
             return MeanAbsoluteErrorWrapper(mode)
@@ -65,6 +66,9 @@ class FmAnalysisManager:
         
         if self._metric == MetricEnum.ACTIVATION_RANGE:
             return ActivationRangeWrapper(mode)
+        
+        if self._metric == MetricEnum.PEAK_SIGNAL_TO_NOISE_RATIO:
+            return PeakSignalToNoiseRatioWrapper(mode)
 
         raise Exception("specified metric not handled")
     

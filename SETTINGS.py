@@ -97,7 +97,7 @@ BATCH_END = 13
 # ------------------------------------ FEATURE MAPS ANALYSIS SETTINGS -----------------------------#
 
 CUDA_COMPILATION_MODE = "ptx"
-FM_ANALYSIS_METRIC = MetricEnum.ACTIVATION_RANGE
+FM_ANALYSIS_METRIC = MetricEnum.PEAK_SIGNAL_TO_NOISE_RATIO
 
 MINKOWSKI_DISTANCE_ORDER_NORM = 3.0
 SINGLE_INPUT_TENSOR: Literal["golden", "faulty"] = "faulty"

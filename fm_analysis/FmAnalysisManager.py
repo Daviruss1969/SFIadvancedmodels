@@ -40,6 +40,7 @@ class FmAnalysisManager:
         from fm_analysis.cuda.sparsity_ratio_wrapper import SparsityRatioWrapper
         from fm_analysis.cuda.activation_sensitivity_wrapper import ActivationSensitivityWrapper
         from fm_analysis.cuda.entropy_wrapper import EntropyWrapper
+        from fm_analysis.cuda.activation_range_wrapper import ActivationRangeWrapper
 
         if self._metric == MetricEnum.MEAN_ABSOLUTE_ERROR:
             return MeanAbsoluteErrorWrapper(mode)
@@ -61,5 +62,11 @@ class FmAnalysisManager:
         
         if self._metric == MetricEnum.ENTROPY:
             return EntropyWrapper(mode)
+        
+        if self._metric == MetricEnum.ACTIVATION_RANGE:
+            return ActivationRangeWrapper(mode)
 
         raise Exception("specified metric not handled")
+    
+    def new_batch(self):
+        self._wrapper.new_batch()

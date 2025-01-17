@@ -121,7 +121,8 @@ class FaultInjectionManager:
         average_memory_occupation = 0
         total_iterations = 1
 
-        with torch.no_grad():
+        stream = torch.cuda.Stream()
+        with torch.no_grad() and torch.cuda.stream(stream):
 
             if force_n is not None:
                 fault_list = fault_list[:force_n]
@@ -150,7 +151,16 @@ class FaultInjectionManager:
                 batch_clean_prediction_indices = [int(fault) for fault in torch.topk(self.clean_output[batch_id], k=1).indices]
 
                 if SETTINGS.FM_ANALYSIS:
-                    # The dictionary containing the golden feature maps
+
+                    end_time = time.time()
+
+                    # Calculer et afficher le temps écoulé
+                    elapsed_time = end_time - start_time
+                    print(f"Temps écoulé : {elapsed_time:.4f} secondes")
+
+                    start_time = time.time()
+
+                    # Reset the dictionary containing the golden feature maps
                     self.golden_fm = {}
 
                     # Register hooks to put the golden feature map of the current batch in gpu memory

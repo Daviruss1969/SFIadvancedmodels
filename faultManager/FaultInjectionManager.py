@@ -20,6 +20,7 @@ from fm_analysis.FmAnalysisManager import FmAnalysisManager
 
 from typing import List, Union
 
+import pycuda.driver as cuda
 
 
 
@@ -151,7 +152,8 @@ class FaultInjectionManager:
                 batch_clean_prediction_indices = [int(fault) for fault in torch.topk(self.clean_output[batch_id], k=1).indices]
 
                 if SETTINGS.FM_ANALYSIS:
-
+                    torch.cuda.synchronize() # Synchronize streams pytorch
+                    cuda.Context.synchronize() # Synchronize streams cuda
                     end_time = time.time()
 
                     # Calculer et afficher le temps écoulé
